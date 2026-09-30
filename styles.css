@@ -542,7 +542,7 @@ tbody th {
   padding: 22px;
 }
 
-.ablation-tables {
+.ablation-metrics {
   grid-template-columns: 1fr;
 }
 
