@@ -11,6 +11,9 @@
   --green: #4bd49d;
   --rose: #f2749a;
   --shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+  --content-max: 1360px;
+  --figure-max: 1520px;
+  --page-gutter: clamp(20px, 3vw, 44px);
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
@@ -146,7 +149,7 @@ img {
   position: relative;
   z-index: 1;
   align-self: end;
-  width: min(1120px, 100%);
+  width: min(1260px, 100%);
   padding: 150px clamp(18px, 5vw, 72px) 88px;
 }
 
@@ -187,7 +190,7 @@ h1 span {
 }
 
 .hero-copy {
-  max-width: 760px;
+  max-width: 860px;
   color: rgba(247, 251, 255, 0.82);
   font-size: clamp(1rem, 1.8vw, 1.24rem);
   line-height: 1.7;
@@ -250,8 +253,8 @@ h1 span {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1px;
-  width: min(1180px, calc(100% - 36px));
-  margin: 28px auto 0;
+  width: min(var(--content-max), calc(100% - var(--page-gutter)));
+  margin: 34px auto 0;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -279,7 +282,7 @@ h1 span {
 }
 
 .section {
-  width: min(1180px, calc(100% - 36px));
+  width: min(var(--content-max), calc(100% - var(--page-gutter)));
   margin: 0 auto;
   padding: clamp(74px, 9vw, 120px) 0 0;
 }
@@ -318,7 +321,7 @@ figcaption {
   display: grid;
   grid-template-columns: minmax(280px, 0.82fr) minmax(0, 1.18fr);
   gap: clamp(28px, 5vw, 70px);
-  width: min(1180px, calc(100% - 36px));
+  width: min(var(--content-max), calc(100% - var(--page-gutter)));
   margin: 0 auto;
   padding: clamp(74px, 9vw, 120px) 0 0;
   align-items: center;
@@ -331,11 +334,24 @@ figcaption {
 
 .full-figure {
   display: block;
+  width: min(var(--figure-max), calc(100% - var(--page-gutter)));
 }
 
 .full-figure .teaser-copy {
-  max-width: 880px;
-  margin-bottom: 26px;
+  display: grid;
+  grid-template-columns: minmax(280px, 0.82fr) minmax(0, 1.18fr);
+  gap: clamp(24px, 5vw, 84px);
+  max-width: var(--content-max);
+  margin: 0 auto 30px;
+  align-items: end;
+}
+
+.full-figure .teaser-copy h2 {
+  margin-bottom: 0;
+}
+
+.full-figure .teaser-copy p:last-child {
+  margin-bottom: 4px;
 }
 
 .oversized-figure img {
@@ -350,7 +366,7 @@ figcaption {
   background:
     linear-gradient(135deg, rgba(48, 120, 255, 0.12), rgba(75, 212, 157, 0.08)),
     rgba(8, 25, 39, 0.7);
-  box-shadow: var(--shadow);
+  box-shadow: 0 26px 78px rgba(0, 0, 0, 0.28);
 }
 
 .figure-frame img {
@@ -400,6 +416,7 @@ figcaption {
 }
 
 .wide-figure {
+  width: min(var(--figure-max), 100%);
   margin-bottom: 24px;
 }
 
@@ -410,7 +427,7 @@ figcaption {
 .figure-gallery {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+  gap: 22px;
 }
 
 .gallery-feature {
@@ -420,7 +437,7 @@ figcaption {
 .table-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+  gap: 22px;
 }
 
 .table-card {
@@ -492,7 +509,7 @@ tbody th {
 .ablation-layout {
   display: grid;
   grid-template-columns: minmax(0, 1.12fr) minmax(300px, 0.88fr);
-  gap: 18px;
+  gap: 22px;
   align-items: stretch;
   margin-bottom: 18px;
 }
@@ -598,6 +615,10 @@ pre {
   .gallery-feature {
     grid-column: auto;
   }
+
+  .full-figure .teaser-copy {
+    display: block;
+  }
 }
 
 @media (max-width: 700px) {
@@ -635,7 +656,7 @@ pre {
   }
 
   .stats-band {
-    width: min(100% - 28px, 1180px);
+    width: min(100% - 28px, var(--content-max));
     margin-top: 18px;
   }
 
