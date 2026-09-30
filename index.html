@@ -1,0 +1,790 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="KINGFISHER: Fast Personalized Visual Autoregressive Generation via Scale-Aware Prompt-Conditioned Scale Decomposition."
+    />
+    <meta name="theme-color" content="#07131f" />
+    <meta property="og:title" content="KINGFISHER" />
+    <meta
+      property="og:description"
+      content="A model-tuning-free framework for fast personalized visual autoregressive generation."
+    />
+    <meta property="og:image" content="./assets/figures/fig-teaser.png" />
+    <meta property="og:type" content="website" />
+    <title>KINGFISHER</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2306111b'/%3E%3Cpath d='M12 38c8-18 24-24 40-14-9 1-17 6-22 15 8-1 14-4 20-9-3 12-12 20-25 20-6 0-10-3-13-12Z' fill='%2328d7ee'/%3E%3Cpath d='M38 24l16-7-9 13Z' fill='%23f2a33b'/%3E%3Ccircle cx='35' cy='23' r='2' fill='%23ffffff'/%3E%3C/svg%3E"
+    />
+    <link rel="preload" href="./assets/figures/fig-teaser.png" as="image" />
+    <link rel="preload" href="./assets/kingfisher-hero.png" as="image" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header" data-header>
+      <a class="brand" href="#top" aria-label="KINGFISHER home">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span>KINGFISHER</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="#abstract">Abstract</a>
+        <a href="#figures">Figures</a>
+        <a href="#method">Method</a>
+        <a href="#results">Results</a>
+        <a href="#tables">Tables</a>
+        <a href="#ablations">Ablations</a>
+        <a href="#citation">Citation</a>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="hero" id="top" aria-labelledby="paper-title">
+        <div class="hero-media" aria-hidden="true">
+          <img src="./assets/kingfisher-hero.png" alt="" />
+        </div>
+        <div class="hero-overlay"></div>
+        <div class="hero-inner">
+          <p class="eyebrow">ICLR 2027 manuscript</p>
+          <h1 id="paper-title">
+            KINGFISHER:
+            <span>Fast Personalized Visual Autoregressive Generation via Scale-Aware Prompt-Conditioned Scale Decomposition</span>
+          </h1>
+          <p class="hero-copy">
+            A model-tuning-free framework that decomposes early autoregressive scale codes into
+            content and style components, recomposes them as a compact semantic prefix, and lets a
+            frozen visual autoregressive generator complete the remaining scales.
+          </p>
+          <div class="author-list" aria-label="Authors">
+            <a href="mailto:vdkhoi@selab.hcmus.edu.vn">Dinh-Khoi Vo</a>
+            <a href="mailto:sugimoto@nii.ac.jp">Akihiro Sugimoto</a>
+            <a href="mailto:tmtriet@fit.hcmus.edu.vn">Minh-Triet Tran</a>
+            <a href="mailto:ltnghia@fit.hcmus.edu.vn">Trung-Nghia Le</a>
+          </div>
+          <div class="hero-actions" aria-label="Project links">
+            <span class="button primary muted-action" aria-disabled="true">Paper coming soon</span>
+            <span class="button muted-action" aria-disabled="true">Code coming soon</span>
+            <a class="button" href="#citation">BibTeX</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="stats-band" aria-label="Key contributions">
+        <div class="stat">
+          <strong>54x</strong>
+          <span>faster pair-specific preparation than diffusion-based methods</span>
+        </div>
+        <div class="stat">
+          <strong>7.5x</strong>
+          <span>faster than VAR-based alternatives</span>
+        </div>
+        <div class="stat">
+          <strong>0</strong>
+          <span>model tuning, LoRA modules, adapters, or learned subject embeddings</span>
+        </div>
+      </section>
+
+      <section class="section split" id="abstract">
+        <div>
+          <p class="section-kicker">Overview</p>
+          <h2>Personalization directly in native scale space.</h2>
+        </div>
+        <div class="text-block">
+          <p>
+            Personalized image generation has been extensively studied in diffusion models, often
+            relying on subject-specific optimization of model weights, textual embeddings, LoRA
+            modules, or adapters. KINGFISHER explores a different direction for fast personalization
+            in visual autoregressive models.
+          </p>
+          <p>
+            The key observation is that a short prefix of early autoregressive scale codes is
+            sufficient to strongly determine object structure and global appearance, while later
+            scales primarily refine the established generation trajectory. KINGFISHER decomposes
+            early residual scale codes into content- and style-related components through
+            prompt-conditioned scale-code subspaces, then recomposes them into a compact semantic
+            prefix for coherent refinement by the frozen generator.
+          </p>
+        </div>
+      </section>
+
+      <section class="paper-figure hero-figure full-figure" id="figures" aria-labelledby="teaser-heading">
+        <div class="teaser-copy">
+          <p class="section-kicker">Figure 1</p>
+          <h2 id="teaser-heading">Content and appearance meet before generation unfolds.</h2>
+          <p>
+            Given two real images, KINGFISHER preserves the object-related structure of one image
+            while transferring the visual appearance of another. Later scales are predicted with
+            bitwise self-correction, producing a coherent personalized result without per-subject
+            training.
+          </p>
+        </div>
+        <figure class="figure-frame oversized-figure">
+          <img
+            src="./assets/figures/fig-teaser.png"
+            alt="KINGFISHER teaser showing content images, style references, and generated personalized results."
+          />
+          <figcaption>
+            KINGFISHER recomposes early autoregressive scale codes from a content image and a
+            style reference, then lets the frozen generator complete coherent later scales.
+          </figcaption>
+        </figure>
+      </section>
+
+      <section class="paper-figure insight-figure" aria-labelledby="insight-heading">
+        <figure class="figure-frame">
+          <img
+            src="./assets/figures/fig-scale-insights.png"
+            alt="Scale-wise analysis comparing prefix reconstruction and prompt routing across residual scales."
+            loading="lazy"
+          />
+          <figcaption>
+            Early residual scales act as compact semantic anchors; later scales mainly refine
+            details along the trajectory already set by the prefix.
+          </figcaption>
+        </figure>
+        <div class="teaser-copy">
+          <p class="section-kicker">Scale-Wise Insight</p>
+          <h2 id="insight-heading">A short early prefix controls semantics.</h2>
+          <p>
+            Prefix reconstruction and prompt routing show that object identity, shape, color, and
+            global appearance are dominated by the earliest consecutive residual scales.
+          </p>
+        </div>
+      </section>
+
+      <section class="section" id="method">
+        <div class="section-heading">
+          <p class="section-kicker">Method</p>
+          <h2>Prompt-conditioned scale decomposition.</h2>
+        </div>
+        <figure class="figure-frame wide-figure">
+          <img
+            src="./assets/figures/fig-pipeline.png"
+            alt="Overview of the KINGFISHER pipeline from tokenizer encoding through prompt-conditioned decomposition and frozen autoregressive refinement."
+            loading="lazy"
+          />
+          <figcaption>
+            The pipeline decomposes selected early residual codes into content, style, and residual
+            factors, recomposes a compact prefix, then predicts the remaining scales with bitwise
+            self-correction.
+          </figcaption>
+        </figure>
+        <div class="method-grid">
+          <article>
+            <span class="step">01</span>
+            <h3>Build scale-code subspaces</h3>
+            <p>
+              Prompt-conditioned directions identify content-related and appearance-related
+              structure inside early autoregressive residual scales.
+            </p>
+          </article>
+          <article>
+            <span class="step">02</span>
+            <h3>Decompose early prefixes</h3>
+            <p>
+              Each early scale code is approximated as a composition of content, style, and residual
+              information, separating factors before full synthesis.
+            </p>
+          </article>
+          <article>
+            <span class="step">03</span>
+            <h3>Compose a semantic prefix</h3>
+            <p>
+              Content components from the source image and style components from the reference image
+              are recombined into a compact prefix.
+            </p>
+          </article>
+          <article>
+            <span class="step">04</span>
+            <h3>Refine with a frozen generator</h3>
+            <p>
+              The remaining scales are completed by the frozen visual autoregressive generator via
+              bitwise self-correction.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section results" id="results">
+        <div class="section-heading">
+          <p class="section-kicker">Results</p>
+          <h2>Fast preparation with strong alignment.</h2>
+        </div>
+        <div class="result-grid">
+          <article>
+            <h3>CSD-100 Evaluation</h3>
+            <p>
+              Experiments report strong content preservation and leading style and text alignment
+              among evaluated methods.
+            </p>
+          </article>
+          <article>
+            <h3>Training-Free Personalization</h3>
+            <p>
+              KINGFISHER avoids model tuning, LoRA, adapters, and learned subject embeddings, making
+              per-pair setup lightweight.
+            </p>
+          </article>
+          <article>
+            <h3>Scale-Wise Insight</h3>
+            <p>
+              Early scales govern object structure and global appearance; later scales mainly
+              refine an already established generation path.
+            </p>
+          </article>
+        </div>
+        <figure class="figure-frame wide-figure result-showcase">
+          <img
+            src="./assets/figures/fig-qualitative-main.jpg"
+            alt="Qualitative comparison on CSD-100 showing content references, style references, baselines, and KINGFISHER results."
+            loading="lazy"
+          />
+          <figcaption>
+            On CSD-100, KINGFISHER balances content preservation and style transfer across diverse
+            content-style combinations without pair-specific model tuning.
+          </figcaption>
+        </figure>
+      </section>
+
+      <section class="section tables-section" id="tables">
+        <div class="section-heading">
+          <p class="section-kicker">Tables</p>
+          <h2>Quantitative evidence from the paper.</h2>
+        </div>
+        <div class="table-grid">
+          <article class="table-card table-card-wide">
+            <div class="table-copy">
+              <h3>Main comparison on CSD-100</h3>
+              <p>
+                KINGFISHER leads style alignment and text alignment while retaining strong content
+                preservation across 500 ordered content-style pairs.
+              </p>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Method</th>
+                    <th>CSD-C</th>
+                    <th>CLIP-I</th>
+                    <th>CSD-S</th>
+                    <th>DINO</th>
+                    <th>CLIP-T</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th>DreamBooth-LoRA</th>
+                    <td>0.5519</td>
+                    <td>0.7362</td>
+                    <td>0.4207</td>
+                    <td>0.3813</td>
+                    <td>0.2492</td>
+                  </tr>
+                  <tr>
+                    <th>B-LoRA</th>
+                    <td>0.4739</td>
+                    <td>0.7182</td>
+                    <td>0.4990</td>
+                    <td>0.4220</td>
+                    <td>0.2683</td>
+                  </tr>
+                  <tr>
+                    <th>UnZipLoRA</th>
+                    <td>0.5782</td>
+                    <td>0.7322</td>
+                    <td>0.3673</td>
+                    <td>0.3560</td>
+                    <td>0.2472</td>
+                  </tr>
+                  <tr>
+                    <th>Inspiration Tree</th>
+                    <td>0.5413</td>
+                    <td>0.7591</td>
+                    <td>0.2897</td>
+                    <td>0.2601</td>
+                    <td>0.2565</td>
+                  </tr>
+                  <tr>
+                    <th>CSD-VAR</th>
+                    <td>0.4731</td>
+                    <td>0.7184</td>
+                    <td>0.2812</td>
+                    <td>0.2503</td>
+                    <td>0.2648</td>
+                  </tr>
+                  <tr class="ours-row">
+                    <th>Kingfisher</th>
+                    <td>0.5519</td>
+                    <td>0.7900</td>
+                    <td>0.5222</td>
+                    <td>0.4350</td>
+                    <td>0.3105</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="table-card">
+            <div class="table-copy">
+              <h3>Efficiency and human preference</h3>
+              <p>
+                Preparation drops to 23.54 seconds per pair, and the blind study gives KINGFISHER
+                the highest preference share.
+              </p>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Method</th>
+                    <th>Prep.</th>
+                    <th>Infer.</th>
+                    <th>Votes</th>
+                    <th>Pref.</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th>DreamBooth-LoRA</th>
+                    <td>1542.21s</td>
+                    <td>11.98s</td>
+                    <td>54</td>
+                    <td>9.0%</td>
+                  </tr>
+                  <tr>
+                    <th>B-LoRA</th>
+                    <td>1309.00s</td>
+                    <td>12.88s</td>
+                    <td>168</td>
+                    <td>28.0%</td>
+                  </tr>
+                  <tr>
+                    <th>UnZipLoRA</th>
+                    <td>3463.70s</td>
+                    <td>11.83s</td>
+                    <td>45</td>
+                    <td>7.5%</td>
+                  </tr>
+                  <tr>
+                    <th>Inspiration Tree</th>
+                    <td>7465.36s</td>
+                    <td>6.56s</td>
+                    <td>39</td>
+                    <td>6.5%</td>
+                  </tr>
+                  <tr>
+                    <th>CSD-VAR</th>
+                    <td>171.65s</td>
+                    <td>1.39s</td>
+                    <td>40</td>
+                    <td>6.7%</td>
+                  </tr>
+                  <tr class="ours-row">
+                    <th>Kingfisher</th>
+                    <td>23.54s</td>
+                    <td>1.61s</td>
+                    <td>254</td>
+                    <td>42.3%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="table-card">
+            <div class="table-copy">
+              <h3>Scale-wise role analysis</h3>
+              <p>
+                The first four residual scales nearly reconstruct the input, while prompt routing
+                only shifts strongly when early ranges are routed.
+              </p>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Experiment</th>
+                    <th>Range</th>
+                    <th>CLIP-I</th>
+                    <th>DINO-I</th>
+                    <th>LPIPS</th>
+                    <th>CLIP-T</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th>Prefix recon.</th>
+                    <td>R1</td>
+                    <td>0.42</td>
+                    <td>0.36</td>
+                    <td>0.58</td>
+                    <td>-</td>
+                  </tr>
+                  <tr>
+                    <th>Prefix recon.</th>
+                    <td>R1:4</td>
+                    <td>0.88</td>
+                    <td>0.84</td>
+                    <td>0.16</td>
+                    <td>-</td>
+                  </tr>
+                  <tr>
+                    <th>Prefix recon.</th>
+                    <td>R1:7</td>
+                    <td>0.93</td>
+                    <td>0.89</td>
+                    <td>0.11</td>
+                    <td>-</td>
+                  </tr>
+                  <tr>
+                    <th>Prompt routing</th>
+                    <td>R10:13</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>0.28</td>
+                  </tr>
+                  <tr>
+                    <th>Prompt routing</th>
+                    <td>R2:4</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>0.81</td>
+                  </tr>
+                  <tr>
+                    <th>Prompt routing</th>
+                    <td>R1:5</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>0.84</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section ablations-section" id="ablations">
+        <div class="section-heading">
+          <p class="section-kicker">Ablations</p>
+          <h2>Why the default prefix is balanced.</h2>
+        </div>
+        <div class="ablation-layout">
+          <figure class="figure-frame">
+            <img
+              src="./assets/figures/fig-prefix-ablation.jpg"
+              alt="Ablation of prefix composition variants at different beta values."
+              loading="lazy"
+            />
+            <figcaption>
+              More rectified early scales strengthen appearance transfer; larger beta values bring
+              more structure back from the content reference.
+            </figcaption>
+          </figure>
+          <div class="ablation-notes">
+            <article>
+              <h3>Prefix composition</h3>
+              <p>
+                The default [R1*, R2*, A3, R4*] keeps A3 as a semantic anchor, reaches the best
+                CLIP-T score, and avoids the content drop caused by rectifying R3.
+              </p>
+            </article>
+            <article>
+              <h3>Structural correction beta</h3>
+              <p>
+                Higher beta improves CSD-C and CLIP-I but reduces CSD-S and DINO. The paper uses
+                beta = 0.5 as a middle operating point.
+              </p>
+            </article>
+            <article>
+              <h3>Objective constraints</h3>
+              <p>
+                Removing style, content, reconstruction, or orthogonality terms weakens the trade-off;
+                the full objective gives the most consistent balance.
+              </p>
+            </article>
+          </div>
+        </div>
+
+        <div class="table-grid ablation-tables">
+          <article class="table-card">
+            <div class="table-copy">
+              <h3>Prefix composition</h3>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Configuration</th>
+                    <th>CSD-C</th>
+                    <th>CLIP-I</th>
+                    <th>CSD-S</th>
+                    <th>DINO</th>
+                    <th>CLIP-T</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th>[A1, A2, A3, A4]</th>
+                    <td>0.7774</td>
+                    <td>0.9370</td>
+                    <td>0.2922</td>
+                    <td>0.2720</td>
+                    <td>0.3017</td>
+                  </tr>
+                  <tr>
+                    <th>[R1*, A2, A3, R4*]</th>
+                    <td>0.6281</td>
+                    <td>0.8392</td>
+                    <td>0.4342</td>
+                    <td>0.3751</td>
+                    <td>0.3119</td>
+                  </tr>
+                  <tr class="ours-row">
+                    <th>[R1*, R2*, A3, R4*]</th>
+                    <td>0.5504</td>
+                    <td>0.7922</td>
+                    <td>0.5210</td>
+                    <td>0.4367</td>
+                    <td>0.3127</td>
+                  </tr>
+                  <tr>
+                    <th>[R1*, R2*, R3*, R4*]</th>
+                    <td>0.4979</td>
+                    <td>0.7416</td>
+                    <td>0.6156</td>
+                    <td>0.5416</td>
+                    <td>0.2959</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="table-card">
+            <div class="table-copy">
+              <h3>Beta sensitivity</h3>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Beta</th>
+                    <th>CSD-C</th>
+                    <th>CLIP-I</th>
+                    <th>CSD-S</th>
+                    <th>DINO</th>
+                    <th>CLIP-T</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th>0.00</th>
+                    <td>0.5436</td>
+                    <td>0.7784</td>
+                    <td>0.5353</td>
+                    <td>0.4597</td>
+                    <td>0.3068</td>
+                  </tr>
+                  <tr>
+                    <th>0.25</th>
+                    <td>0.5471</td>
+                    <td>0.7866</td>
+                    <td>0.5333</td>
+                    <td>0.4521</td>
+                    <td>0.3104</td>
+                  </tr>
+                  <tr class="ours-row">
+                    <th>0.50</th>
+                    <td>0.5504</td>
+                    <td>0.7922</td>
+                    <td>0.5210</td>
+                    <td>0.4367</td>
+                    <td>0.3127</td>
+                  </tr>
+                  <tr>
+                    <th>0.75</th>
+                    <td>0.5551</td>
+                    <td>0.7968</td>
+                    <td>0.5161</td>
+                    <td>0.4239</td>
+                    <td>0.3130</td>
+                  </tr>
+                  <tr>
+                    <th>1.00</th>
+                    <td>0.5613</td>
+                    <td>0.8027</td>
+                    <td>0.5063</td>
+                    <td>0.4096</td>
+                    <td>0.3144</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="table-card">
+            <div class="table-copy">
+              <h3>Loss constraints</h3>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Configuration</th>
+                    <th>CSD-C</th>
+                    <th>CLIP-I</th>
+                    <th>CSD-S</th>
+                    <th>DINO</th>
+                    <th>CLIP-T</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th>w/o Lsty</th>
+                    <td>0.5478</td>
+                    <td>0.7895</td>
+                    <td>0.4726</td>
+                    <td>0.3914</td>
+                    <td>0.3048</td>
+                  </tr>
+                  <tr>
+                    <th>w/o Lalign</th>
+                    <td>0.5127</td>
+                    <td>0.7568</td>
+                    <td>0.5073</td>
+                    <td>0.4218</td>
+                    <td>0.3035</td>
+                  </tr>
+                  <tr>
+                    <th>w/o Lremove</th>
+                    <td>0.5019</td>
+                    <td>0.7446</td>
+                    <td>0.4981</td>
+                    <td>0.4127</td>
+                    <td>0.3009</td>
+                  </tr>
+                  <tr>
+                    <th>w/o Lrec</th>
+                    <td>0.4742</td>
+                    <td>0.7165</td>
+                    <td>0.4386</td>
+                    <td>0.3597</td>
+                    <td>0.2863</td>
+                  </tr>
+                  <tr>
+                    <th>w/o Lorth</th>
+                    <td>0.5264</td>
+                    <td>0.7698</td>
+                    <td>0.4935</td>
+                    <td>0.4062</td>
+                    <td>0.3074</td>
+                  </tr>
+                  <tr class="ours-row">
+                    <th>Full objective</th>
+                    <td>0.5504</td>
+                    <td>0.7922</td>
+                    <td>0.5210</td>
+                    <td>0.4367</td>
+                    <td>0.3127</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section gallery-section" id="gallery">
+        <div class="section-heading">
+          <p class="section-kicker">Gallery</p>
+          <h2>Additional qualitative evidence.</h2>
+        </div>
+        <div class="figure-gallery">
+          <figure class="figure-frame gallery-feature">
+            <img
+              src="./assets/figures/fig-kingfisher-results.jpg"
+              alt="Additional qualitative KINGFISHER results on CSD-100."
+              loading="lazy"
+            />
+            <figcaption>
+              Qualitative KINGFISHER results on CSD-100: each example pairs a content reference,
+              a style reference, and the resulting personalized image.
+            </figcaption>
+          </figure>
+          <figure class="figure-frame">
+            <img
+              src="./assets/figures/fig-qualitative-extra.jpg"
+              alt="Additional comparison with prior methods."
+              loading="lazy"
+            />
+            <figcaption>
+              Additional comparison with prior methods on CSD-100 content-style pairs.
+            </figcaption>
+          </figure>
+          <figure class="figure-frame">
+            <img
+              src="./assets/figures/fig-style-removal.jpg"
+              alt="Input images and their style-removed representations."
+              loading="lazy"
+            />
+            <figcaption>
+              Style removal visualization: suppress appearance-specific cues while retaining
+              underlying object structure.
+            </figcaption>
+          </figure>
+          <figure class="figure-frame">
+            <img
+              src="./assets/figures/fig-limitations.jpg"
+              alt="Challenging cases with abstract or ambiguous style references."
+              loading="lazy"
+            />
+            <figcaption>
+              Challenging cases where abstract or weak style references make appearance isolation
+              less stable.
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="section institutions" aria-label="Institutions">
+        <p>University of Science, Ho Chi Minh City, Vietnam</p>
+        <p>Vietnam National University, Ho Chi Minh City, Vietnam</p>
+        <p>National Institute of Informatics, Tokyo, Japan</p>
+      </section>
+
+      <section class="section citation" id="citation">
+        <div class="section-heading">
+          <p class="section-kicker">Citation</p>
+          <h2>BibTeX</h2>
+        </div>
+        <div class="code-panel">
+          <button class="copy-button" type="button" data-copy="#bibtex">Copy</button>
+          <pre id="bibtex"><code>@misc{vo2027kingfisher,
+  title  = {KINGFISHER: Fast Personalized Visual Autoregressive Generation via Scale-Aware Prompt-Conditioned Scale Decomposition},
+  author = {Vo, Dinh-Khoi and Sugimoto, Akihiro and Tran, Minh-Triet and Le, Trung-Nghia},
+  year   = {2027},
+  note   = {Manuscript}
+}</code></pre>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>KINGFISHER project page · <a href="https://vdkhoi20.github.io/KINGFISHER/">vdkhoi20.github.io/KINGFISHER</a></p>
+    </footer>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
