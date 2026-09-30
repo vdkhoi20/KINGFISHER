@@ -23,7 +23,7 @@
     />
     <link rel="preload" href="./assets/figures/fig-teaser.png" as="image" />
     <link rel="preload" href="./assets/kingfisher-hero.png" as="image" />
-    <link rel="stylesheet" href="./styles.css?v=20260930-wide3" />
+    <link rel="stylesheet" href="./styles.css?v=20260930-balanced2" />
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -38,8 +38,8 @@
         <a href="#figures">Figures</a>
         <a href="#method">Method</a>
         <a href="#results">Results</a>
-        <a href="#tables">Tables</a>
-        <a href="#ablations">Ablations</a>
+        <a href="#tables">Metrics</a>
+        <a href="#ablations">Ablation</a>
         <a href="#citation">Citation</a>
       </nav>
     </header>
@@ -120,7 +120,6 @@
 
       <section class="paper-figure hero-figure full-figure" id="figures" aria-labelledby="teaser-heading">
         <div class="teaser-copy">
-          <p class="section-kicker">Figure 1</p>
           <h2 id="teaser-heading">Content and appearance meet before generation unfolds.</h2>
           <p>
             Given two real images, KINGFISHER preserves the object-related structure of one image
@@ -259,8 +258,7 @@
 
       <section class="section tables-section" id="tables">
         <div class="section-heading">
-          <p class="section-kicker">Tables</p>
-          <h2>Quantitative evidence from the paper.</h2>
+          <h2>Quantitative Results</h2>
         </div>
         <div class="table-grid">
           <article class="table-card table-card-wide">
@@ -482,8 +480,7 @@
 
       <section class="section ablations-section" id="ablations">
         <div class="section-heading">
-          <p class="section-kicker">Ablations</p>
-          <h2>Why the default prefix is balanced.</h2>
+          <h2>Ablation Studies</h2>
         </div>
         <div class="ablation-layout">
           <figure class="figure-frame">
@@ -508,8 +505,8 @@
             <article>
               <h3>Structural correction beta</h3>
               <p>
-                Higher beta improves CSD-C and CLIP-I but reduces CSD-S and DINO. The paper uses
-                beta = 0.5 as a middle operating point.
+                Higher beta improves CSD-C and CLIP-I but reduces CSD-S and DINO. We use
+                beta = 0.5 as a balanced operating point.
               </p>
             </article>
             <article>
@@ -713,8 +710,8 @@
 
       <section class="section gallery-section" id="gallery">
         <div class="section-heading">
-          <p class="section-kicker">Gallery</p>
-          <h2>Additional qualitative evidence.</h2>
+          <p class="section-kicker">Qualitative Results</p>
+          <h2>More Content-Style Compositions</h2>
         </div>
         <div class="figure-gallery">
           <figure class="figure-frame gallery-feature">
