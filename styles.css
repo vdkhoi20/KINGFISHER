@@ -205,6 +205,9 @@ h1 span {
 }
 
 .author-list a {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
   border: 1px solid rgba(247, 251, 255, 0.18);
   border-radius: 999px;
   background: rgba(6, 17, 27, 0.52);
@@ -218,6 +221,13 @@ h1 span {
   color: #ffffff;
 }
 
+sup {
+  color: var(--cyan);
+  font-size: 0.68em;
+  font-weight: 850;
+  line-height: 0;
+}
+
 .affiliation-list {
   display: flex;
   flex-wrap: wrap;
@@ -227,6 +237,9 @@ h1 span {
 }
 
 .affiliation-list p {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
   margin: 0;
   border: 1px solid rgba(247, 251, 255, 0.14);
   border-radius: 999px;
