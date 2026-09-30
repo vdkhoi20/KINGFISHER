@@ -201,7 +201,7 @@ h1 span {
   flex-wrap: wrap;
   gap: 10px;
   max-width: 860px;
-  margin: 28px 0;
+  margin: 28px 0 14px;
 }
 
 .author-list a {
@@ -216,6 +216,25 @@ h1 span {
 .author-list a:focus-visible {
   border-color: rgba(40, 215, 238, 0.62);
   color: #ffffff;
+}
+
+.affiliation-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  max-width: 980px;
+  margin: 0 0 28px;
+}
+
+.affiliation-list p {
+  margin: 0;
+  border: 1px solid rgba(247, 251, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(6, 17, 27, 0.38);
+  padding: 8px 12px;
+  color: rgba(247, 251, 255, 0.72);
+  font-size: 0.9rem;
+  line-height: 1.35;
 }
 
 .hero-actions {
@@ -530,21 +549,6 @@ tbody th {
   grid-template-columns: 1fr;
 }
 
-.institutions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  padding-top: 82px;
-}
-
-.institutions p {
-  margin: 0;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 11px 14px;
-  color: rgba(247, 251, 255, 0.75);
-}
-
 .citation {
   padding-bottom: clamp(74px, 9vw, 120px);
 }
@@ -651,6 +655,7 @@ pre {
   }
 
   .author-list a,
+  .affiliation-list p,
   .button {
     width: 100%;
   }
